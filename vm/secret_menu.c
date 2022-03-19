@@ -12,11 +12,15 @@
 void _sum();
 void _diff();
 void _bnz();
+void _outc();
+void _inc();
 
 void init_secret_menu(){
 	secret_menu[0] = _sum;
 	secret_menu[1] = _diff;
 	secret_menu[2] = _bnz;
+	secret_menu[3] = _outc;
+	secret_menu[4] = _inc;
 }
 
 void _sum(){
@@ -31,4 +35,12 @@ void _bnz(){
 	if(heap[0] != 0){
 		vm_state.b = *((int *) (heap + 2));
 	}
+}
+
+void _outc(){
+	printf("%i", heap[0]);
+}
+
+void _inc(){
+	scanf("%c", heap[0]);
 }

@@ -40,6 +40,7 @@ int main(int argc, char *argv[]){
 		//for(vm_state.ip = load_offset; vm_state.ip < size + load_offset; vm_state.ip += sizeof(inst_t)){
 		while(1){ //Main execution loop...
 			inst_t *inst = (inst_t *) (heap + vm_state.ip); //Load inst
+			printf("\tOp: %02x, A0: %04x, A1: %04x\n", inst->op, inst->a0, inst->a1);
 			run_inst(inst); //Run it!
 
 			//Give some debug outputs
@@ -67,8 +68,6 @@ int main(int argc, char *argv[]){
 }
 
 int run_inst(inst_t *inst){
-	printf("\tOp: %02x, A0: %04x, A1: %04x\n", inst->op, inst->a0, inst->a1);
-
 	switch(inst->op){
 		case WRAP_C_A:
 			heap[inst->a1] = (char) inst->a0;
