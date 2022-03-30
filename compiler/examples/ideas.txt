@@ -1,0 +1,135 @@
+/*
+	Dumb things I want:
+	1) Turing complete. The VM is already there, so I just need a sane-ish language that targets it.
+	2) Variables gotta be annoying to use. Maybe weird pipe-ing syntax like:
+		[X] => (Y)
+		(Y) --- [X]
+		Make direction of assignment dependant on parens? like:
+		(X) -=- )Y) would shove Y into X
+		Could do compound pipes:
+		(Y( -+- [X] -+- [1] -+- (Z) where [] denotes an "underground" pipe
+			This would roughly mean Z = Y + X + 1
+	3) Nonsense approach to operators. Heck, maybe I just go full pipeline nonsense:
+		(X) -+- )Y( adds Y to X
+		)Y( --- (X) subtracts Y from X, since () denotes target and )) or (( denotes source
+	4) Loops can't look like loops. Maybe do a gross suffix thing like...
+		)1( -+- (X) @ )5( adds 1 to X, mix that up 5 times
+	5) MAGIC VARIABLE NAMES. This will probably apply to I/O mostly...
+
+	With these forces combined, we might have some code that looks like this:
+*/
+
+(X) -=- [1] -+- )1) 
+
+(JUST A DIGIT( -=- [X] -+- (Y) //Get number from keyboard, set X to that number, add X to Y, store result in Y
+
+/*
+	The issue here is that, besides the dumb syntax, this looks trivial.
+	What I like so far:
+		I think () for dest and (( / )) for source is a master stroke
+			...this will break IDE's, so I gotta love it.
+
+	I gotta focus on what makes a bad language. How can I address these desing goals?
+
+	1) It surprises you.
+
+	2) It looks ugly.
+		This is why I like (X( / )X)
+		Maybe I could do hug-based operators:
+			(X (+) 1)
+			That's kinda ugly. It looks like LISP, but it's also stupid. 6/9 characters are fluff, so that's good
+
+		Make assignments a different syntax, because that is funny:
+			X will be 5
+			= X 5
+			5 ==> X
+			(X(5))  //This has the benefit that I can say "it's functioanl programming because all variables are functions".
+
+	3) Arbitrary and fake rules.
+		Why don't I impose line number restrictions? Ex:
+			Even numbered lines can be used for operations.
+			Odd numbered lines can be used for assignments.
+			Line numbers that are multiples of 5 can only be labels.
+		The downside is that this is just compiler fluff, not actual mal-functionality
+		The upside is this forces akward spacing, which I like a lot
+
+		Maybe limit numeric literals to single digits? This would force use of bad operators (tm)
+
+	4) Not actually powerful, but appears to be so.
+		I really like mingle, but don't want to just copy that. Here are some ideas:
+			Linger	(~~)	Concatinates two numbers. Ex: 1 ~~ 2 => 12
+			Choppy	(V) 	Cut trailing number off, returning chopped value. Ex: 
+				(X(101))	//X = 101
+				(X (V))		//X = 10, returning 0
+
+			Chippy	(^)		Cut leading number off, returning chopped value.		
+			Point	(@)		Set variable's value to current location, this will be the label of doom. Ex:
+				(L (@))		//L now points to, well, this line...
+			Up		(~=)	Jump to label before this line. Optionally, jump back if value of arg is not 0. Ex:
+				(L (~=))	//Unconditional branch
+				(L (~=) X)	//Conditional branch, if X != 0
+
+	5) You _can_ actually use it, but you have to work around the language's problems.
+
+	Under this regieme we get stuff like...
+*/
+
+(X(5))				//X = 5
+(X (~~) 3)			//X = 53
+					//Nothing, since I have nothing to assign
+(Y (~~) (5 (~~) 3)) //Y = 53, but faster
+(X(Y (V)))			//Set X to VY, which is 3. Y is now 5
+
+/*
+
+	WHAT IF I ENFORCE SWITCHING BRACES FOR "READABILIY"?
+
+*/
+
+(X[5])
+[X (~~) 3]
+
+{Y [~~] (5 <~~> 3)}
+<X(Y [V])>
+
+/*
+
+	I think I like this.
+	Jokes in play:
+
+		This is based on LISP, with improvements!
+		It's functional. All variables are functions since you have to call them to assing a value.
+		Short numbers since long form numeric data is prone to human error.
+		Support for integer-based stacks.
+		Enforced readability features: certain lines are reserved for special features, braces have to be switched up for legibility.
+
+	Lets see what a countdown would look like, assuming this program starts at line 1:
+*/
+
+[X(5)]
+
+
+
+(L[@])
+{X (-) 1}
+
+[X (OUT NUM)]
+
+(L <~=> X)
+
+/*
+	
+	Now, lets do that without reasonable math operators...
+
+*/
+
+1	[X(0 <~~> [1 <~~> (2 <~~> {3 <~~> 4})])]
+2
+3
+4
+5	(L[@])
+6	[{X (V)} (OUT NUM)]
+7
+8	(L <~=> X)
+9
+0
