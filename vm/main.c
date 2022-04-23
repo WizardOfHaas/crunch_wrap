@@ -97,7 +97,7 @@ int run_inst(inst_t *inst){
 
 void print_heap(char *heap){
 	for(int i = 0; i < 16; i++){
-		printf("%02x ", heap[i]);
+		printf("%03i ", heap[i]);
 	}
 	printf("\n");
 }		

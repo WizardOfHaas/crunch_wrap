@@ -14,6 +14,7 @@ void _diff();
 void _bnz();
 void _outc();
 void _inc();
+void _shift_l();
 
 void init_secret_menu(){
 	secret_menu[0] = _sum;
@@ -21,6 +22,7 @@ void init_secret_menu(){
 	secret_menu[2] = _bnz;
 	secret_menu[3] = _outc;
 	secret_menu[4] = _inc;
+	secret_menu[5] = _shift_l;
 }
 
 void _sum(){
@@ -43,4 +45,8 @@ void _outc(){
 
 void _inc(){
 	scanf("%c", heap[0]);
+}
+
+void _shift_l(){
+	heap[0] = heap[0] * 10;
 }
